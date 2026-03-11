@@ -33,7 +33,7 @@ A proof-of-concept that automates the generation of localised social ad creative
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-username/creative-automation-pipeline-assignment.git
+git clone https://github.com/wesley-tremayne/creative-automation-pipeline-assignment.git
 cd creative-automation-pipeline-assignment
 
 python -m venv .venv
