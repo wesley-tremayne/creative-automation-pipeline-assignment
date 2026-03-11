@@ -17,7 +17,7 @@ A proof-of-concept that automates the generation of localised social ad creative
 | **Campaign Briefs** | YAML or JSON input — products, region, audience, message, offer, CTA |
 | **Multi-product** | Process ≥ 2 products per campaign in a single run |
 | **Aspect Ratios** | 1:1 (1080×1080), 9:16 (1080×1920), 16:9 (1920×1080) |
-| **AI Image Gen** | DALL-E 3 via OpenAI API (auto-falls back to gradient placeholder) |
+| **AI Image Gen** | gpt-image-1 via OpenAI API (auto-falls back to gradient placeholder) |
 | **Asset Reuse** | Detects existing images in `assets/source_images/` — skips generation |
 | **Image Composition** | Brand name, campaign message, product name, tagline, offer badge, CTA button, logo |
 | **Brand Compliance** | Checks primary colour presence, logo placement, image brightness |
@@ -33,8 +33,8 @@ A proof-of-concept that automates the generation of localised social ad creative
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-username/creative-automation-pipeline.git
-cd creative-automation-pipeline
+git clone https://github.com/your-username/creative-automation-pipeline-assignment.git
+cd creative-automation-pipeline-assignment
 
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
@@ -47,7 +47,7 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
-# If you skip this step, the pipeline uses gradient placeholders instead of DALL-E
+# If you skip this step, the pipeline uses gradient placeholders instead of gpt-image-1
 ```
 
 ### 3a. Run via CLI
@@ -91,30 +91,37 @@ The pipeline works without any API key — gradient placeholder fallback is alwa
 ## 📁 Project Structure
 
 ```
-creative-automation-pipeline/
+creative-automation-pipeline-assignment/
 ├── run_pipeline.py          # CLI entry point (Click)
 ├── app.py                   # FastAPI web server
 ├── requirements.txt
+├── requirements.prod.txt
+├── Dockerfile
+├── docker-compose.yml
 ├── .env.example
 │
 ├── src/
 │   ├── pipeline.py          # Main orchestrator — runs the full workflow
 │   ├── models.py            # Pydantic data models (Brief, Product, Result…)
-│   ├── image_generator.py   # DALL-E 3 generation + gradient placeholder fallback
+│   ├── image_generator.py   # gpt-image-1 generation + gradient placeholder fallback
 │   ├── image_composer.py    # Pillow composition — text, logo, overlays, CTA
 │   ├── brand_checker.py     # Brand compliance checks (colour, logo, brightness)
 │   ├── content_checker.py   # Prohibited words / legal content scanner
 │   ├── reporter.py          # Jinja2 HTML report generator
 │   ├── config.py            # Centralised Settings dataclass + load_settings()
+│   ├── config_manager.py    # Config loading with storage-aware fallback
+│   ├── error_catalog.py     # Structured error codes and messages
 │   ├── logging_config.py    # Centralised setup_logging() + log_timing()
 │   └── storage/
+│       ├── __init__.py
 │       ├── base.py          # StorageBackend ABC
 │       ├── local_storage.py # LocalStorageBackend (default — writes to outputs/)
 │       └── azure_blob_storage.py  # AzureBlobStorageBackend (STORAGE_BACKEND=azure_blob)
 │
 ├── config/
 │   ├── brand_guidelines.json   # Primary/secondary colours, logo placement rules
-│   └── prohibited_words.json   # Prohibited words, disclaimer triggers, superlatives
+│   ├── prohibited_words.json   # Prohibited words, disclaimer triggers, superlatives
+│   └── dalle_pricing.json      # gpt-image-1 token-based pricing table
 │
 ├── briefs/
 │   ├── hydraboost_us.yaml      # Sample 1 — skincare, US market, 2 products
@@ -126,7 +133,17 @@ creative-automation-pipeline/
 │   └── source_images/          # Drop pre-existing product images here for reuse
 │
 ├── static/
-│   └── index.html              # Single-page web UI (Tailwind + Vanilla JS)
+│   ├── index.html              # Single-page web UI (Tailwind + Vanilla JS)
+│   ├── package.json            # Frontend dev dependencies and lint scripts
+│   ├── tailwind.config.js
+│   ├── js/
+│   │   └── app.js              # Application JavaScript
+│   └── css/
+│       ├── input.css           # Tailwind entry point (regenerate: npm run tailwind:build)
+│       ├── styles.css          # Custom styles (gradients, animations, overlays)
+│       └── tailwind.min.css    # Pre-built production Tailwind CSS (committed)
+│
+├── tests/                      # Pytest test suite
 │
 └── outputs/                    # Generated assets (gitignored)
     └── {campaign_id}/
@@ -167,7 +184,7 @@ products:
 
 ### Pre-existing asset reuse
 
-Drop a file named `hydraboost_moisturizer.png` into `assets/source_images/` and the pipeline will detect and reuse it automatically — skipping DALL-E generation for that product.
+Drop a file named `hydraboost_moisturizer.png` into `assets/source_images/` and the pipeline will detect and reuse it automatically — skipping gpt-image-1 generation for that product.
 
 ---
 
@@ -205,10 +222,10 @@ Each creative includes:
 The pipeline checks for `OPENAI_API_KEY` at runtime. If absent, `image_generator.py` generates a category-aware gradient placeholder using only Pillow — no external dependencies or API calls required. This enables demos and CI runs with zero cost.
 
 ### 2. Asset reuse before generation
-`pipeline.py` checks `assets/source_images/` for a filename containing the product name slug before calling DALL-E. This respects existing creative work and reduces API costs — a key requirement for production systems running hundreds of campaigns.
+`pipeline.py` checks `assets/source_images/` for a filename containing the product name slug before calling gpt-image-1. This respects existing creative work and reduces API costs — a key requirement for production systems running hundreds of campaigns.
 
 ### 3. Aspect-ratio-aware composition
-Rather than generating a single image and cropping naively, DALL-E is called with the optimal size per ratio (`1024×1024`, `1024×1792`, `1792×1024`). Pillow then performs a cover-crop resize to reach exact pixel targets. This avoids black bars and maintains focal point integrity.
+Rather than generating a single image and cropping naively, gpt-image-1 is called with the optimal size per ratio (`1024×1024`, `1024×1792`, `1792×1024`). Pillow then performs a cover-crop resize to reach exact pixel targets. This avoids black bars and maintains focal point integrity.
 
 ### 4. Declarative brand guidelines
 `config/brand_guidelines.json` and `config/prohibited_words.json` are external config files, not hardcoded values. A brand manager can update them without touching source code — reflecting how these systems work in production.
@@ -217,7 +234,7 @@ Rather than generating a single image and cropping naively, DALL-E is called wit
 The FastAPI web endpoint streams pipeline events via Server-Sent Events rather than polling. This gives the user live feedback (which product is being processed, which ratio is being composed) without requiring WebSocket complexity.
 
 ### 6. Separation of pipeline stages
-Each stage (generation, composition, brand check, content check, reporting) lives in its own module with a clear interface. This makes it easy to swap implementations — e.g. replacing DALL-E with Stable Diffusion, or adding a vector DB for style consistency.
+Each stage (generation, composition, brand check, content check, reporting) lives in its own module with a clear interface. This makes it easy to swap implementations — e.g. replacing gpt-image-1 with Stable Diffusion, or adding a vector DB for style consistency.
 
 ---
 
@@ -225,13 +242,13 @@ Each stage (generation, composition, brand check, content check, reporting) live
 
 | Item | Notes |
 |---|---|
-| **Image quality** | DALL-E 3 generates excellent hero images but is not product-photography accurate. Real campaigns would use product shots as source assets. |
+| **Image quality** | gpt-image-1 generates excellent hero images but is not product-photography accurate. Real campaigns would use product shots as source assets. |
 | **Localisation** | The brief supports `language` and `target_region` fields; currently the text overlay renders in English only. Localized copy would be passed in the brief per-market. |
 | **Font rendering** | Uses system Liberation/DejaVu fonts. Production use would bundle a licensed brand font (e.g. via Google Fonts at setup time). |
 | **Storage** | Defaults to local filesystem (`outputs/`). Azure Blob Storage is supported out of the box via `STORAGE_BACKEND=azure_blob` + `AZURE_STORAGE_CONNECTION_STRING`. Other providers can be added by implementing `StorageBackend` in `src/storage/`. |
 | **Brand colours** | The compliance checker uses a pixel-sampling heuristic. Production-grade checks would use LAB colour space comparison for perceptual accuracy. |
-| **DALL-E rate limits** | OpenAI allows ~5 image generations/min on standard tier. Large batch runs should implement a retry/backoff queue (structure is in place). |
-| **Cost** | Each DALL-E 3 Standard 1024×1024 image costs ~$0.04. A campaign with 2 products × 3 ratios = 6 API calls (~$0.24). |
+| **gpt-image-1 rate limits** | OpenAI allows ~5 image generations/min on standard tier. Large batch runs should implement a retry/backoff queue (structure is in place). |
+| **Cost** | gpt-image-1 uses token-based pricing: $5/1M input tokens, $40/1M output tokens. A typical 1024×1024 image costs ~$0.03–$0.07 depending on quality. A campaign with 2 products × 3 ratios = 6 generations (~$0.18–$0.42). |
 
 ---
 
@@ -247,14 +264,14 @@ class AspectRatio(str, Enum):
     WIDE      = "4x5"   # ← add here
 
 RATIO_DIMENSIONS[AspectRatio.WIDE] = (864, 1080)
-DALLE_SIZES[AspectRatio.WIDE]      = "1024x1024"  # closest supported
+DALLE_SIZES[AspectRatio.WIDE]      = "1024x1024"  # closest size supported by gpt-image-1
 ```
 
 **Swap the image generator:**
 ```python
 # src/image_generator.py — replace _generate_dalle_image() with:
 def _generate_stability_image(product, brief, aspect_ratio, output_path, api_key):
-    # Call Stability AI / Imagen / Flux API here
+    # Call Stability AI / Imagen / Flux API here instead of gpt-image-1
     ...
 ```
 
@@ -283,14 +300,14 @@ class S3StorageBackend(StorageBackend):
 | Package | Purpose |
 |---|---|
 | `fastapi` + `uvicorn` | Web server & SSE streaming |
-| `openai` | DALL-E 3 image generation |
+| `openai` | gpt-image-1 image generation |
 | `pillow` | Image composition, text overlay, resizing |
 | `pyyaml` | Campaign brief parsing |
 | `pydantic` | Data validation & models |
 | `jinja2` | HTML report templating |
 | `click` | CLI interface |
 | `python-dotenv` | `.env` configuration |
-| `requests` | Downloading DALL-E image URLs |
+| `requests` | Downloading gpt-image-1 image URLs |
 
 ---
 

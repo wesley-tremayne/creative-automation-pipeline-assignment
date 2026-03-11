@@ -42,7 +42,6 @@ from .models import (
     AspectRatio,
     AssetResult,
     CampaignBrief,
-    ImageGenerationMetrics,
     PipelineResult,
     Product,
     ProductResult,

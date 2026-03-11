@@ -51,7 +51,14 @@ def isolate_outputs(tmp_path, monkeypatch):
 
     Prevents tests from polluting the real outputs/ folder, which would
     show test artifacts in the web UI's Previous Campaigns section.
+
+    Also forces local storage backend by default so tests that were written
+    for local storage pass even when STORAGE_BACKEND=azure_blob is configured
+    in the environment. Tests that explicitly need Azure behavior must
+    override _is_azure and get_storage_backend themselves using patch().
     """
+    from src.storage.local_storage import LocalStorageBackend
+
     test_outputs = tmp_path / "outputs"
     test_outputs.mkdir()
     monkeypatch.setattr("src.pipeline.OUTPUTS_ROOT", test_outputs)
@@ -64,6 +71,21 @@ def isolate_outputs(tmp_path, monkeypatch):
         monkeypatch.setattr("app.OUTPUTS_ROOT", test_outputs)
     except AttributeError:
         pass
+
+    # Force local storage backend — prevents tests from accidentally writing
+    # to Azure when STORAGE_BACKEND=azure_blob is set in the environment.
+    # Individual tests that need Azure routing must use patch() themselves.
+    local_backend = LocalStorageBackend(base_dir=test_outputs)
+    try:
+        monkeypatch.setattr("app._is_azure", lambda: False)
+        monkeypatch.setattr("app._storage_backend", None)
+    except AttributeError:
+        pass
+    try:
+        monkeypatch.setattr("src.pipeline.get_storage_backend", lambda: local_backend)
+    except AttributeError:
+        pass
+
     # Also ensure OPENAI_API_KEY is empty so tests don't hit the real API
     monkeypatch.setenv("OPENAI_API_KEY", "")
     yield test_outputs
