@@ -1,0 +1,22 @@
+campaign_id: hydraboost_us_summer_2025
+brand_name: LuminaCo
+target_region: "United States"
+target_market: "North America"
+target_audience: "Women & men aged 25–45 interested in skincare and wellness"
+campaign_message: "Glow from within. Every single day."
+offer: "30% OFF"
+cta: "Shop Now"
+language: en
+tone: "aspirational, warm, empowering"
+website: "www.luminaco.com"
+
+products:
+  - name: "HydraBoost Moisturizer"
+    description: "Advanced daily moisturizer with hyaluronic acid and SPF 30 for all-day hydration and sun protection"
+    category: skincare
+    tagline: "Hydrate. Protect. Glow."
+
+  - name: "VitaGlow Serum"
+    description: "Brightening vitamin C serum that fades dark spots and evens skin tone with 15% ascorbic acid"
+    category: skincare
+    tagline: "Fade. Brighten. Radiate."

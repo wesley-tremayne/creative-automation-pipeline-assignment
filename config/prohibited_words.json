@@ -1,0 +1,18 @@
+{
+  "prohibited": [
+    { "word": "guaranteed",   "reason": "Absolute guarantees are prohibited without substantiation" },
+    { "word": "cure",         "reason": "Disease cure claims require regulatory approval" },
+    { "word": "free",         "reason": "Must meet FTC 'free' claim requirements; add T&Cs" },
+    { "word": "clinically proven", "reason": "Requires cited clinical evidence" },
+    { "word": "miracle",      "reason": "Hyperbolic health/beauty claim — not permissible" }
+  ],
+  "requires_disclaimer": [
+    { "word": "results may vary", "reason": "Disclaimer copy must appear in legal-size text" },
+    { "word": "limited time",     "reason": "Offer end date must be clearly stated" },
+    { "word": "sale",             "reason": "Sale price must reference original price per FTC" },
+    { "word": "natural",          "reason": "Definition per USDA/FDA guidelines may apply" }
+  ],
+  "superlatives": [
+    "#1", "best", "most", "only", "first", "ultimate", "unbeatable", "world-class"
+  ]
+}

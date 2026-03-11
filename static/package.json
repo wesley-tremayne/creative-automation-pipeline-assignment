@@ -1,0 +1,23 @@
+{
+  "name": "creative-pipeline-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint js/ --ext .js",
+    "lint:fix": "eslint js/ --ext .js --fix",
+    "format:check": "prettier --check 'js/**/*.js' 'css/**/*.css' '*.html'",
+    "format": "prettier --write 'js/**/*.js' 'css/**/*.css' '*.html'",
+    "lint:html": "htmlhint index.html",
+    "lint:css": "stylelint 'css/styles.css'",
+    "lint:all": "npm run lint && npm run lint:html && npm run lint:css && npm run format:check",
+    "tailwind:build": "tailwindcss -i css/input.css -o css/tailwind.min.css --minify"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0",
+    "htmlhint": "^1.1.4",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard": "^36.0.0",
+    "tailwindcss": "^3.4.0"
+  }
+}

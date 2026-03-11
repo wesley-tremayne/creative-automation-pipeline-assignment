@@ -1,0 +1,175 @@
+/* ── Typography ──────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────────── */
+body {
+  background: #0a0a12;
+}
+
+/* ── Gradient text ───────────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Glass effect ────────────────────────────────────────────────────────────── */
+.glass {
+  background: rgb(255 255 255 / 4%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 8%);
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────────── */
+.log-item {
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulse-ring {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ── Asset images ────────────────────────────────────────────────────────────── */
+.asset-img {
+  transition: transform 0.25s;
+}
+
+.asset-img:hover {
+  transform: scale(1.03);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4c1d95;
+  border-radius: 3px;
+}
+
+/* ── Textarea ────────────────────────────────────────────────────────────────── */
+textarea {
+  resize: vertical;
+}
+
+/* ── Tab buttons ─────────────────────────────────────────────────────────────── */
+.tab-btn {
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: #7c3aed;
+  color: white;
+}
+
+/* ── Mode tabs ───────────────────────────────────────────────────────────────── */
+.mode-tab {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.mode-tab.active {
+  background: rgb(124 58 237 / 30%);
+  border-color: #7c3aed;
+  color: #c4b5fd;
+}
+
+.mode-tab:not(.active) {
+  border-color: rgb(100 116 139 / 30%);
+}
+
+/* ── Form inputs ─────────────────────────────────────────────────────────────── */
+.form-input {
+  background: #0f172a;
+  border: 1px solid rgb(100 116 139 / 30%);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #e2e8f0;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 1px rgb(124 58 237 / 30%);
+}
+
+.form-input::placeholder {
+  color: #475569;
+}
+
+/* ── Form labels ─────────────────────────────────────────────────────────────── */
+.form-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.form-label .required {
+  color: #f87171;
+  margin-left: 2px;
+}
+
+/* ── Validation states ───────────────────────────────────────────────────────── */
+.field-error {
+  border-color: #f87171 !important;
+}
+
+.error-msg {
+  color: #f87171;
+  font-size: 0.6875rem;
+  margin-top: 0.125rem;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────────── */
+.product-card {
+  animation: fade-in 0.3s ease;
+}
+
+.campaign-card {
+  transition: all 0.25s ease;
+}
+
+.campaign-card:hover {
+  border-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgb(124 58 237 / 15%);
+}

@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./briefs:/app/briefs
+    env_file:
+      - .env
+    # Secrets passed via .env file only — never hardcoded here.
+    # Required: none (runs with gradient fallback by default).
+    # Optional: OPENAI_API_KEY, STORAGE_BACKEND, AZURE_STORAGE_*

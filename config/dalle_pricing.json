@@ -1,0 +1,7 @@
+{
+  "gpt-image-1": {
+    "text_input_per_1m": 5.00,
+    "image_input_per_1m": 10.00,
+    "image_output_per_1m": 40.00
+  }
+}

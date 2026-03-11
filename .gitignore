@@ -1,0 +1,50 @@
+# Claude Automation
+check_errors.txt
+scripts/
+CLAUDE.md
+.stories/
+tools/
+agents/
+
+
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Outputs (generated assets)
+outputs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Test artifacts
+.pytest_cache/
+
+# Frontend tooling (static/)
+static/node_modules/
+static/.cache/
+
+# Test artifacts — safety net (real logos should be committed explicitly)
+assets/logos/*.png
+assets/logos/*.jpg
+assets/logos/*.jpeg
+assets/logos/*.svg

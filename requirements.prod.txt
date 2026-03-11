@@ -1,0 +1,11 @@
+# Production-only dependencies
+# Concatenate with requirements.txt for production builds:
+#   cat requirements.txt requirements.prod.txt > requirements.all.txt
+#   pip install -r requirements.all.txt
+#
+# Or in a Dockerfile:
+#   COPY requirements.txt requirements.prod.txt ./
+#   RUN cat requirements.txt requirements.prod.txt | pip install -r /dev/stdin
+
+# Azure Blob Storage backend (required when STORAGE_BACKEND=azure_blob)
+azure-storage-blob==12.23.1

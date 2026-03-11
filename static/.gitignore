@@ -1,0 +1,8 @@
+node_modules/
+.cache/
+*.log
+npm-debug.log*
+
+# Tailwind input — the output (tailwind.min.css) IS committed
+# Regenerate with: npm run tailwind:build
+css/input.css.map

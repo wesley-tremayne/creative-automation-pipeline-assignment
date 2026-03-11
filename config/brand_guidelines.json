@@ -1,0 +1,11 @@
+{
+  "brand_name": "LuminaCo",
+  "primary_color": [255, 195, 0],
+  "secondary_color": [20, 20, 30],
+  "text_color": [255, 255, 255],
+  "accent_color": [167, 139, 250],
+  "font_family": "Inter",
+  "logo_placement": "bottom-right",
+  "safe_zone_percent": 5,
+  "notes": "Primary colour is gold (#FFC300). Always maintain contrast ratio ≥ 4.5:1 for text. Logo must appear in all creatives."
+}

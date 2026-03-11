@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+outputs/
+.git/
+.stories/
+agents/
+scripts/
+tools/
+*.zip
+.env
+check_errors.txt
+static/node_modules/

@@ -1,0 +1,22 @@
+campaign_id: vitacharge_eu_autumn_2025
+brand_name: LuminaCo
+target_region: "Europe"
+target_market: "Germany, France, Spain"
+target_audience: "Active adults aged 18–35, fitness-conscious, urban lifestyle"
+campaign_message: "Fuel your momentum. Charge every day."
+offer: "Buy 2 Get 1 Free"
+cta: "Order Now"
+language: en
+tone: "energetic, bold, motivating"
+website: "www.luminaco.com/energy"
+
+products:
+  - name: "VitaCharge Energy Drink"
+    description: "Zero-sugar functional energy drink with B-vitamins, electrolytes, and natural caffeine from green tea extract"
+    category: beverage
+    tagline: "Natural energy. Zero compromise."
+
+  - name: "VitaCharge Protein Bar"
+    description: "High-protein snack bar with 20g whey protein, oats, and real fruit pieces — available in 4 flavours"
+    category: food
+    tagline: "Power in every bite."

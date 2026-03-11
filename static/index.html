@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Generate localised social ad creatives across multiple aspect ratios from a campaign brief using AI."
+    />
+    <meta name="theme-color" content="#0a0a12" />
+    <meta property="og:title" content="Creative Automation Pipeline" />
+    <meta
+      property="og:description"
+      content="Generate localised social ad creatives across multiple aspect ratios from a campaign brief using AI."
+    />
+    <title>Creative Automation Pipeline</title>
+    <link rel="stylesheet" href="/static/css/tailwind.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body class="min-h-screen text-slate-200">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center text-lg"
+            aria-hidden="true"
+          >
+            🎨
+          </div>
+          <span class="font-bold text-lg gradient-text">Creative Automation Pipeline</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <span id="api-status" class="flex items-center gap-1" role="status" aria-live="polite">
+            <span class="w-2 h-2 rounded-full bg-slate-600" aria-hidden="true"></span> Checking API…
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+      <!-- Hero -->
+      <section aria-label="Page introduction" class="mb-8 text-center">
+        <h1 class="text-3xl font-bold gradient-text mb-2">Ad Creative Generator</h1>
+        <p class="text-slate-400 text-sm">
+          Load a campaign brief → generate branded ad creatives for all aspect ratios
+        </p>
+      </section>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- LEFT: Brief Editor -->
+        <div class="flex flex-col gap-4">
+          <!-- Brief editor with mode tabs -->
+          <section aria-label="Campaign brief editor" class="glass rounded-xl p-5 flex-1">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider">
+                📋 Campaign Brief
+              </h2>
+              <div class="flex gap-1" role="tablist" aria-label="Brief input mode">
+                <button
+                  id="mode-form-btn"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="form-mode"
+                  class="mode-tab active text-xs px-3 py-1.5 rounded-lg border"
+                >
+                  Form
+                </button>
+                <button
+                  id="mode-json-btn"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="json-mode"
+                  class="mode-tab text-xs px-3 py-1.5 rounded-lg border text-slate-400"
+                >
+                  JSON
+                </button>
+              </div>
+            </div>
+
+            <!-- FORM MODE -->
+            <div id="form-mode" role="tabpanel" aria-labelledby="mode-form-btn" class="space-y-4">
+              <!-- Campaign Details -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="f-campaign-id"
+                    >Campaign ID <span class="required" aria-hidden="true">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="f-campaign-id"
+                    class="form-input"
+                    placeholder="e.g. summer_sale_2026"
+                    maxlength="100"
+                    aria-required="true"
+                    aria-describedby="err-campaign-id"
+                  />
+                  <div class="error-msg hidden" id="err-campaign-id" role="alert"></div>
+                </div>
+                <div>
+                  <label class="form-label" for="f-brand-name">Brand Name</label>
+                  <input
+                    type="text"
+                    id="f-brand-name"
+                    class="form-input"
+                    placeholder="Brand"
+                    value="Brand"
+                    maxlength="100"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="f-target-region"
+                    >Target Region <span class="required" aria-hidden="true">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="f-target-region"
+                    class="form-input"
+                    placeholder="e.g. US, EU, LATAM"
+                    maxlength="50"
+                    aria-required="true"
+                    aria-describedby="err-target-region"
+                  />
+                  <div class="error-msg hidden" id="err-target-region" role="alert"></div>
+                </div>
+                <div>
+                  <label class="form-label" for="f-target-market">Target Market</label>
+                  <input
+                    type="text"
+                    id="f-target-market"
+                    class="form-input"
+                    placeholder="e.g. United States (optional)"
+                    maxlength="100"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="form-label" for="f-target-audience"
+                  >Target Audience <span class="required" aria-hidden="true">*</span></label
+                >
+                <textarea
+                  id="f-target-audience"
+                  class="form-input"
+                  rows="2"
+                  placeholder="e.g. Health-conscious millennials aged 25-40"
+                  maxlength="500"
+                  aria-required="true"
+                  aria-describedby="err-target-audience"
+                ></textarea>
+                <div class="error-msg hidden" id="err-target-audience" role="alert"></div>
+              </div>
+
+              <div>
+                <label class="form-label" for="f-campaign-message"
+                  >Campaign Message <span class="required" aria-hidden="true">*</span></label
+                >
+                <textarea
+                  id="f-campaign-message"
+                  class="form-input"
+                  rows="2"
+                  placeholder="e.g. Stay hydrated with our premium formula"
+                  maxlength="500"
+                  aria-required="true"
+                  aria-describedby="err-campaign-message"
+                ></textarea>
+                <div class="error-msg hidden" id="err-campaign-message" role="alert"></div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="form-label" for="f-offer">Offer</label>
+                  <input
+                    type="text"
+                    id="f-offer"
+                    class="form-input"
+                    placeholder="e.g. 30% OFF"
+                    maxlength="100"
+                  />
+                </div>
+                <div>
+                  <label class="form-label" for="f-cta">CTA</label>
+                  <input
+                    type="text"
+                    id="f-cta"
+                    class="form-input"
+                    placeholder="Shop Now"
+                    value="Shop Now"
+                    maxlength="50"
+                  />
+                </div>
+                <div>
+                  <label class="form-label" for="f-language">Language</label>
+                  <select id="f-language" class="form-input">
+                    <option value="en" selected>English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                    <option value="pt">Português</option>
+                    <option value="ja">日本語</option>
+                    <option value="zh">中文</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="f-tone">Tone</label>
+                  <input
+                    type="text"
+                    id="f-tone"
+                    class="form-input"
+                    placeholder="professional, aspirational"
+                    value="professional, aspirational"
+                    maxlength="100"
+                  />
+                </div>
+                <div>
+                  <label class="form-label" for="f-website">Website</label>
+                  <input
+                    type="text"
+                    id="f-website"
+                    class="form-input"
+                    placeholder="https://example.com (optional)"
+                    maxlength="2048"
+                  />
+                </div>
+              </div>
+
+              <!-- Config Profile Selectors -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="f-brand-config">Brand Guidelines Profile</label>
+                  <select id="f-brand-config" class="form-input">
+                    <option value="">Default</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label" for="f-content-config">Prohibited Words Profile</label>
+                  <select id="f-content-config" class="form-input">
+                    <option value="">Default</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Logo Section -->
+              <fieldset class="border-t border-slate-800 pt-4">
+                <legend class="form-label mb-2">Logo</legend>
+                <div class="flex items-start gap-3">
+                  <div class="flex gap-2">
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="logo-mode"
+                        value="none"
+                        checked
+                        class="accent-violet-600"
+                      />
+                      <span class="text-xs text-slate-300">No Logo</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="logo-mode"
+                        value="upload"
+                        class="accent-violet-600"
+                      />
+                      <span class="text-xs text-slate-300">Upload</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="logo-mode"
+                        value="generate"
+                        class="accent-violet-600"
+                      />
+                      <span class="text-xs text-slate-300">Generate</span>
+                    </label>
+                  </div>
+                  <div
+                    id="logo-preview"
+                    class="hidden flex-shrink-0 w-10 h-10 rounded-lg border border-slate-700 overflow-hidden bg-slate-900 flex items-center justify-center"
+                  >
+                    <img
+                      id="logo-preview-img"
+                      class="w-full h-full object-contain"
+                      alt="Uploaded logo preview"
+                    />
+                  </div>
+                </div>
+                <div id="logo-upload-area" class="hidden mt-2">
+                  <label
+                    class="block cursor-pointer border-2 border-dashed border-slate-700 hover:border-violet-600 rounded-lg p-3 text-center transition"
+                  >
+                    <input
+                      type="file"
+                      id="logo-file-input"
+                      accept="image/png,image/jpeg,image/svg+xml"
+                      class="hidden"
+                      aria-label="Upload logo file"
+                    />
+                    <div class="text-xs text-slate-400">
+                      <span class="text-violet-400">Click to upload</span> or drag a PNG/JPG/SVG
+                      (max 5MB)
+                    </div>
+                    <div
+                      id="logo-upload-status"
+                      class="text-xs text-slate-500 mt-1 hidden"
+                      role="status"
+                      aria-live="polite"
+                    ></div>
+                  </label>
+                </div>
+                <div id="logo-generate-info" class="hidden mt-2 text-xs text-slate-500">
+                  A text-based logo will be generated using the brand name.
+                </div>
+              </fieldset>
+
+              <!-- Products Section -->
+              <section aria-label="Products" class="border-t border-slate-800 pt-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="form-label mb-0">
+                    Products <span class="required" aria-hidden="true">*</span>
+                  </h3>
+                  <button
+                    id="add-product-btn"
+                    class="text-xs text-violet-400 hover:text-violet-300 px-2 py-1 rounded border border-violet-800 hover:border-violet-600 transition"
+                    aria-label="Add a new product"
+                  >
+                    + Add Product
+                  </button>
+                </div>
+                <div class="error-msg hidden mb-2" id="err-products" role="alert"></div>
+                <div id="products-container" class="space-y-3" aria-label="Product list"></div>
+              </section>
+            </div>
+
+            <!-- JSON MODE -->
+            <div id="json-mode" role="tabpanel" aria-labelledby="mode-json-btn" class="hidden">
+              <div class="flex justify-end mb-2">
+                <button
+                  id="format-json-btn"
+                  class="text-xs text-slate-400 hover:text-violet-300 px-2 py-1 rounded border border-slate-700 hover:border-violet-700 transition"
+                  aria-label="Format JSON"
+                >
+                  Format
+                </button>
+              </div>
+              <textarea
+                id="brief-editor"
+                class="w-full bg-slate-900 rounded-lg p-4 text-xs font-mono text-slate-200 border border-slate-700 focus:border-violet-600 focus:ring-1 focus:ring-violet-600 outline-none"
+                rows="22"
+                aria-label="Campaign brief JSON editor"
+                placeholder="Paste or edit your campaign brief JSON here…"
+              ></textarea>
+            </div>
+
+            <button
+              id="run-btn"
+              class="mt-4 w-full bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Run the creative pipeline"
+            >
+              <span id="run-btn-icon" aria-hidden="true">🚀</span>
+              <span id="run-btn-text">Run Pipeline</span>
+            </button>
+          </section>
+
+          <!-- Configuration (collapsible) -->
+          <section aria-label="Configuration" class="glass rounded-xl overflow-hidden">
+            <button
+              id="config-toggle-btn"
+              class="w-full p-5 flex items-center justify-between text-left"
+              aria-expanded="false"
+              aria-controls="config-panel"
+            >
+              <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider">
+                ⚙ Configuration
+              </h2>
+              <span
+                id="config-toggle-icon"
+                class="text-slate-500 text-xs transition-transform"
+                aria-hidden="true"
+                >▼</span
+              >
+            </button>
+            <div id="config-panel" class="hidden px-5 pb-5">
+              <!-- Config tabs -->
+              <div class="flex gap-1 mb-4" role="tablist" aria-label="Configuration sections">
+                <button
+                  id="cfg-tab-brand"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="cfg-brand"
+                  class="mode-tab active text-xs px-3 py-1.5 rounded-lg border"
+                >
+                  Brand Guidelines
+                </button>
+                <button
+                  id="cfg-tab-words"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="cfg-words"
+                  class="mode-tab text-xs px-3 py-1.5 rounded-lg border text-slate-400"
+                >
+                  Prohibited Words
+                </button>
+              </div>
+
+              <!-- Profile selector -->
+              <div class="flex items-center gap-2 mb-4">
+                <label class="form-label mb-0 whitespace-nowrap" for="cfg-profile-select"
+                  >Profile:</label
+                >
+                <select
+                  id="cfg-profile-select"
+                  class="form-input flex-1"
+                  aria-label="Configuration profile"
+                >
+                  <option value="">Default</option>
+                </select>
+                <button
+                  id="cfg-save-btn"
+                  class="text-xs bg-violet-600/30 hover:bg-violet-600/50 text-violet-300 px-3 py-1.5 rounded-lg border border-violet-700/50 transition"
+                  aria-label="Save configuration"
+                >
+                  Save
+                </button>
+                <button
+                  id="cfg-save-as-btn"
+                  class="text-xs text-slate-400 hover:text-violet-300 px-2 py-1.5 rounded-lg border border-slate-700 transition"
+                  aria-label="Save configuration as new profile"
+                >
+                  Save As…
+                </button>
+                <button
+                  id="cfg-reset-btn"
+                  class="text-xs text-slate-400 hover:text-red-300 px-2 py-1.5 rounded-lg border border-slate-700 transition"
+                  aria-label="Reset configuration to defaults"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <!-- Brand Guidelines form -->
+              <div id="cfg-brand" role="tabpanel" aria-labelledby="cfg-tab-brand" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="form-label" for="cfg-brand-name">Brand Name</label>
+                    <input type="text" id="cfg-brand-name" class="form-input" maxlength="100" />
+                  </div>
+                  <div>
+                    <label class="form-label" for="cfg-font-family">Font Family</label>
+                    <input type="text" id="cfg-font-family" class="form-input" maxlength="100" />
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label class="form-label" for="cfg-primary-color">Primary Color</label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="cfg-primary-color"
+                        class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                        aria-label="Primary color picker"
+                      />
+                      <span
+                        id="cfg-primary-rgb"
+                        class="text-xs text-slate-400 font-mono"
+                        aria-live="polite"
+                      ></span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label" for="cfg-secondary-color">Secondary Color</label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="cfg-secondary-color"
+                        class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                        aria-label="Secondary color picker"
+                      />
+                      <span
+                        id="cfg-secondary-rgb"
+                        class="text-xs text-slate-400 font-mono"
+                        aria-live="polite"
+                      ></span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label" for="cfg-text-color">Text Color</label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="cfg-text-color"
+                        class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                        aria-label="Text color picker"
+                      />
+                      <span
+                        id="cfg-text-rgb"
+                        class="text-xs text-slate-400 font-mono"
+                        aria-live="polite"
+                      ></span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label" for="cfg-accent-color">Accent Color</label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="cfg-accent-color"
+                        class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
+                        aria-label="Accent color picker"
+                      />
+                      <span
+                        id="cfg-accent-rgb"
+                        class="text-xs text-slate-400 font-mono"
+                        aria-live="polite"
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="form-label" for="cfg-logo-placement">Logo Placement</label>
+                    <select id="cfg-logo-placement" class="form-input">
+                      <option value="bottom-right">Bottom Right</option>
+                      <option value="bottom-left">Bottom Left</option>
+                      <option value="top-right">Top Right</option>
+                      <option value="top-left">Top Left</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label" for="cfg-safe-zone">Safe Zone %</label>
+                    <input
+                      type="number"
+                      id="cfg-safe-zone"
+                      class="form-input"
+                      min="0"
+                      max="50"
+                      aria-label="Safe zone percentage"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label" for="cfg-notes">Notes</label>
+                  <textarea
+                    id="cfg-notes"
+                    class="form-input"
+                    rows="2"
+                    maxlength="1000"
+                    aria-label="Brand guidelines notes"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Prohibited Words form -->
+              <div
+                id="cfg-words"
+                role="tabpanel"
+                aria-labelledby="cfg-tab-words"
+                class="hidden space-y-4"
+              >
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="form-label mb-0">Prohibited Words</label>
+                    <button
+                      id="add-prohibited-btn"
+                      class="text-xs text-violet-400 hover:text-violet-300 px-2 py-1 rounded border border-violet-800 hover:border-violet-600 transition"
+                      aria-label="Add prohibited word"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <div
+                    id="cfg-prohibited-list"
+                    class="space-y-1"
+                    role="list"
+                    aria-label="Prohibited words list"
+                  ></div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="form-label mb-0">Requires Disclaimer</label>
+                    <button
+                      id="add-disclaimer-btn"
+                      class="text-xs text-violet-400 hover:text-violet-300 px-2 py-1 rounded border border-violet-800 hover:border-violet-600 transition"
+                      aria-label="Add disclaimer word"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <div
+                    id="cfg-disclaimer-list"
+                    class="space-y-1"
+                    role="list"
+                    aria-label="Disclaimer words list"
+                  ></div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="form-label mb-0">Superlatives</label>
+                    <button
+                      id="add-superlative-btn"
+                      class="text-xs text-violet-400 hover:text-violet-300 px-2 py-1 rounded border border-violet-800 hover:border-violet-600 transition"
+                      aria-label="Add superlative word"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <div
+                    id="cfg-superlatives-list"
+                    class="flex flex-wrap gap-1"
+                    role="list"
+                    aria-label="Superlatives list"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT: Campaigns + Progress + Results -->
+        <div class="flex flex-col gap-4">
+          <!-- Previous Campaigns -->
+          <section aria-label="Previous campaigns" class="glass rounded-xl p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider">
+                📂 Previous Campaigns
+              </h2>
+              <button
+                id="refresh-campaigns-btn"
+                class="text-xs text-slate-400 hover:text-violet-300"
+                aria-label="Refresh campaigns list"
+              >
+                ↻ Refresh
+              </button>
+            </div>
+            <div id="campaigns-list" class="text-slate-500 text-xs" aria-live="polite">
+              Loading…
+            </div>
+          </section>
+
+          <!-- Progress log -->
+          <section aria-label="Pipeline progress" class="glass rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider">
+                ⚡ Pipeline Log
+              </h2>
+              <span id="running-indicator" class="hidden" role="status" aria-live="polite">
+                <span
+                  class="pulse-ring w-2 h-2 bg-green-400 rounded-full inline-block"
+                  aria-hidden="true"
+                ></span>
+                <span class="text-xs text-green-400 ml-1">Running…</span>
+              </span>
+            </div>
+            <div
+              id="log-container"
+              class="bg-slate-900 rounded-lg p-3 h-40 overflow-y-auto text-xs font-mono space-y-1"
+              role="log"
+              aria-live="polite"
+              aria-label="Pipeline log output"
+            >
+              <span class="text-slate-600">Waiting for pipeline to run…</span>
+            </div>
+          </section>
+
+          <!-- Results -->
+          <section
+            id="results-section"
+            class="hidden glass rounded-xl p-5"
+            aria-label="Generated assets"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider">
+                🖼 Generated Assets
+              </h2>
+              <div
+                class="flex gap-2"
+                id="ratio-tabs"
+                role="tablist"
+                aria-label="Filter by aspect ratio"
+              >
+                <button
+                  class="tab-btn active text-xs px-3 py-1 rounded-full border border-violet-700"
+                  data-ratio="all"
+                  role="tab"
+                  aria-selected="true"
+                  aria-label="Show all aspect ratios"
+                >
+                  All
+                </button>
+                <button
+                  class="tab-btn text-xs px-3 py-1 rounded-full border border-slate-700 text-slate-400"
+                  data-ratio="1x1"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="Show 1:1 aspect ratio"
+                >
+                  1:1
+                </button>
+                <button
+                  class="tab-btn text-xs px-3 py-1 rounded-full border border-slate-700 text-slate-400"
+                  data-ratio="9x16"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="Show 9:16 aspect ratio"
+                >
+                  9:16
+                </button>
+                <button
+                  class="tab-btn text-xs px-3 py-1 rounded-full border border-slate-700 text-slate-400"
+                  data-ratio="16x9"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="Show 16:9 aspect ratio"
+                >
+                  16:9
+                </button>
+              </div>
+            </div>
+            <div
+              id="assets-grid"
+              class="grid grid-cols-3 gap-3 overflow-y-auto max-h-[500px]"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <!-- Summary card -->
+          <section
+            id="summary-card"
+            class="hidden glass rounded-xl p-5"
+            aria-label="Pipeline run summary"
+          >
+            <h2 class="text-sm font-semibold text-violet-300 uppercase tracking-wider mb-3">
+              📊 Summary
+            </h2>
+            <div id="summary-content" aria-live="polite"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
